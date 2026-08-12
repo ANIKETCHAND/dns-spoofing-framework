@@ -1,0 +1,14 @@
+{
+    "example.test": {
+        "legitimate_ip": "192.168.56.20",
+        "simulation_ip": "192.168.56.99"
+    },
+    "portal.test": {
+        "legitimate_ip": "192.168.56.30",
+        "simulation_ip": "192.168.56.100"
+    },
+    "internal.test": {
+        "legitimate_ip": "192.168.56.40",
+        "simulation_ip": "192.168.56.101"
+    }
+}

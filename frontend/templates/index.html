@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Spoofing Simulation Framework</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Chart.js & Three.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-container">
+                    <div class="logo-3d-wrapper">
+                        <img src="/static/images/dns_tech_3d_logo.jpg" alt="DNS Tech Logo" class="brand-3d-img">
+                        <canvas id="three-logo-canvas" width="48" height="48"></canvas>
+                    </div>
+                    <div class="brand-text">
+                        <span class="logo-title">DNS SPOOFING</span>
+                        <span class="logo-subtitle">FRAMEWORK</span>
+                    </div>
+                </div>
+                <span class="lab-badge"><span class="pulse-dot"></span> LAB MODE ACTIVE</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/events" class="nav-item" data-page="events">
+                    <span class="nav-icon">📋</span>
+                    <span>DNS Events</span>
+                </a>
+                <a href="/alerts" class="nav-item" data-page="alerts">
+                    <span class="nav-icon">🚨</span>
+                    <span>Alerts</span>
+                </a>
+                <a href="/pcap" class="nav-item" data-page="pcap">
+                    <span class="nav-icon">📁</span>
+                    <span>PCAP Analysis</span>
+                </a>
+                <a href="/settings" class="nav-item" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="version-badge">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Header -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="top-bar-title-group">
+                    <h1 class="page-title" id="page-title">Dashboard</h1>
+                </div>
+
+                <div class="top-bar-actions">
+                    <div class="live-monitor-controls">
+                        <select id="interface-select" class="filter-select cyber-select">
+                            <option value="">Interface: Default (Any)</option>
+                        </select>
+                        <button class="btn btn-secondary cyber-btn-glow" id="toggle-monitor-btn">
+                            <span>📡</span> Start Sniffing
+                        </button>
+                    </div>
+                    <span class="status-indicator" id="connection-status">
+                        <span class="status-dot online"></span>
+                        <span>Connected</span>
+                    </span>
+                    <button class="btn btn-primary cyber-btn-primary" id="run-demo-btn">
+                        <span>🧪</span> Run Demo
+                    </button>
+                    <div class="dropdown" style="position: relative; display: inline-block;">
+                        <button class="btn btn-secondary" id="export-report-btn" style="padding: 6px 12px; font-size: 13px;">
+                            <span>📄</span> Export Report ▾
+                        </button>
+                        <div id="export-menu" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 6px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-3d); z-index: 200; min-width: 180px; padding: 6px 0;">
+                            <a href="/api/reports/export?format=html" target="_blank" style="display: block; padding: 8px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px;">📊 Executive HTML Report</a>
+                            <a href="/api/reports/export?format=csv" download style="display: block; padding: 8px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px;">📁 CSV Incident Log</a>
+                            <a href="/api/reports/export?format=json" download style="display: block; padding: 8px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px;">⚙️ JSON SIEM Feed</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <div class="content-area page-tab-content active" id="dashboard-content">
+                <!-- Banner Card -->
+                <div class="hero-3d-banner card-3d">
+                    <div class="hero-text">
+                        <h2>🛡️ Realtime DNS Spoofing Detection Lab</h2>
+                        <p>Live Packet Sniffing • Multi-Rule Risk Engine • Forensic PCAP Inspection</p>
+                    </div>
+                    <div class="hero-logo-display">
+                        <img src="/static/images/dns_tech_3d_logo.jpg" alt="Tech Logo" class="hero-3d-graphic">
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card card-3d">
+                        <div class="stat-icon total">📊</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="total-queries">0</div>
+                            <div class="stat-label">Total DNS Queries</div>
+                        </div>
+                    </div>
+                    <div class="stat-card card-3d">
+                        <div class="stat-icon suspicious">⚠️</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="suspicious-queries">0</div>
+                            <div class="stat-label">Suspicious Queries</div>
+                        </div>
+                    </div>
+                    <div class="stat-card card-3d">
+                        <div class="stat-icon spoofed">🔴</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="spoofed-events">0</div>
+                            <div class="stat-label">Spoofing Events</div>
+                        </div>
+                    </div>
+                    <div class="stat-card card-3d">
+                        <div class="stat-icon critical">🚨</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="critical-alerts">0</div>
+                            <div class="stat-label">Critical Alerts</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-grid">
+                    <div class="chart-container card-3d">
+                        <div class="chart-header">
+                            <h3>📈 DNS Queries Over Time</h3>
+                        </div>
+                        <canvas id="queriesChart"></canvas>
+                    </div>
+                    <div class="chart-container card-3d">
+                        <div class="chart-header">
+                            <h3>🎯 Severity Distribution</h3>
+                        </div>
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container card-3d">
+                        <div class="chart-header">
+                            <h3>⚠️ Suspicious Events Over Time</h3>
+                        </div>
+                        <canvas id="suspiciousChart"></canvas>
+                    </div>
+                    <div class="chart-container card-3d">
+                        <div class="chart-header">
+                            <h3>🌐 Top Queried Domains</h3>
+                        </div>
+                        <canvas id="domainsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Events Table -->
+                <div class="table-container card-3d">
+                    <div class="table-header">
+                        <h3>Recent DNS Events</h3>
+                        <div class="table-filters">
+                            <input type="text" id="event-search" placeholder="Search domains..." class="search-input">
+                            <select id="severity-filter" class="filter-select">
+                                <option value="">All Severities</option>
+                                <option value="CRITICAL">Critical</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
+                            </select>
+                            <button id="refresh-btn" class="btn btn-secondary">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="events-table" id="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Domain</th>
+                                    <th>Type</th>
+                                    <th>Expected IP</th>
+                                    <th>Received IP</th>
+                                    <th>Risk Score</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-body">
+                                <!-- Events populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DNS Events View -->
+            <div class="content-area page-tab-content" id="events-content" style="display: none;">
+                <div class="table-container card-3d">
+                    <div class="table-header">
+                        <h3>All Captured & Simulated DNS Events</h3>
+                        <div class="table-filters">
+                            <input type="text" id="events-tab-search" placeholder="Search domains..." class="search-input">
+                            <select id="events-tab-severity" class="filter-select">
+                                <option value="">All Severities</option>
+                                <option value="CRITICAL">Critical</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
+                            </select>
+                            <button id="events-tab-refresh" class="btn btn-secondary">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Domain</th>
+                                    <th>Type</th>
+                                    <th>Expected IP</th>
+                                    <th>Received IP</th>
+                                    <th>Risk Score</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-tab-body">
+                                <!-- Events populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts View -->
+            <div class="content-area page-tab-content" id="alerts-content" style="display: none;">
+                <div class="table-container card-3d">
+                    <div class="table-header">
+                        <h3>🚨 Security Alerts</h3>
+                        <div class="table-filters">
+                            <select id="alerts-severity-filter" class="filter-select">
+                                <option value="">All Severities</option>
+                                <option value="CRITICAL">Critical</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
+                            </select>
+                            <button id="alerts-refresh-btn" class="btn btn-secondary">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Severity</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alerts-table-body">
+                                <!-- Alerts populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PCAP Analysis View -->
+            <div class="content-area page-tab-content" id="pcap-content" style="display: none;">
+                <div class="card card-3d" style="padding: 24px; margin-bottom: 24px;">
+                    <h2>📁 Upload Packet Capture (PCAP / PCAPNG)</h2>
+                    <p style="color: var(--text-secondary); margin: 8px 0 20px 0;">
+                        Upload packet capture files to analyze DNS queries, examine suspicious TTL changes, and detect spoofed responses offline.
+                    </p>
+                    <form id="pcap-upload-form" style="display: flex; gap: 15px; align-items: center;">
+                        <input type="file" id="pcap-file-input" accept=".pcap,.pcapng" class="search-input" style="padding: 8px;" required>
+                        <button type="submit" id="upload-pcap-btn" class="btn btn-primary cyber-btn-primary">
+                            <span>📤</span> Analyze PCAP
+                        </button>
+                    </form>
+                    <div id="pcap-status-msg" style="margin-top: 12px; font-weight: 500;"></div>
+                </div>
+
+                <div class="table-container card-3d" id="pcap-results-container" style="display: none;">
+                    <div class="table-header">
+                        <h3>PCAP Extracted Events</h3>
+                        <div id="pcap-summary-badge" class="badge badge-primary"></div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Domain</th>
+                                    <th>Response IP</th>
+                                    <th>Risk Score</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pcap-results-body">
+                                <!-- PCAP results populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="content-area page-tab-content" id="settings-content" style="display: none;">
+                <!-- Trusted Baseline Domain Addition -->
+                <div class="card card-3d" style="padding: 24px; margin-bottom: 24px;">
+                    <h3>🛡️ Add Trusted Domain Baseline</h3>
+                    <p style="color: var(--text-secondary); margin: 6px 0 16px 0;">
+                        Configure expected legitimate IP addresses for trusted domains so the detection engine can spot spoofed IP responses.
+                    </p>
+                    <form id="add-trusted-form" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <input type="text" id="trusted-domain-input" placeholder="Domain (e.g. example.test)" class="search-input" style="flex: 1; min-width: 200px;" required>
+                        <input type="text" id="trusted-ip-input" placeholder="Expected IP (e.g. 192.168.56.20)" class="search-input" style="flex: 1; min-width: 200px;" required>
+                        <button type="submit" class="btn btn-primary cyber-btn-primary">➕ Add to Baseline</button>
+                    </form>
+                    <div id="trusted-msg" style="margin-top: 10px; font-size: 13px;"></div>
+                </div>
+
+                <!-- Trusted Domains List -->
+                <div class="table-container card-3d" style="margin-bottom: 24px;">
+                    <div class="table-header">
+                        <h3>Trusted Baseline Domains</h3>
+                        <button id="refresh-trusted-btn" class="btn btn-secondary">🔄 Refresh</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Domain</th>
+                                    <th>Expected IP</th>
+                                    <th>TTL Range (Min-Max)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trusted-domains-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Database Maintenance -->
+                <div class="card card-3d" style="padding: 24px;">
+                    <h3>🗑️ Maintenance & Reset</h3>
+                    <p style="color: var(--text-secondary); margin: 6px 0 16px 0;">
+                        Clear lab simulation data from the local SQLite database.
+                    </p>
+                    <button id="clear-sim-btn" class="btn btn-danger">
+                        <span>🔥</span> Clear Simulation Events
+                    </button>
+                    <span id="clear-sim-msg" style="margin-left: 12px; font-weight: 500;"></span>
+                </div>
+            </div>
+
+            <!-- Event Detail Modal -->
+            <div class="modal" id="event-modal">
+                <div class="modal-overlay"></div>
+                <div class="modal-content card-3d">
+                    <div class="modal-header">
+                        <h2>Event Details</h2>
+                        <button class="modal-close" id="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body" id="modal-body">
+                        <!-- Content loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

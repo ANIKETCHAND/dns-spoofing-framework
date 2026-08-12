@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Events - DNS Spoofing Framework</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">🛡️ DNS Spoofing</div>
+                <span class="lab-badge">LAB MODE</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/events" class="nav-item active" data-page="events">
+                    <span class="nav-icon">📋</span>
+                    <span>DNS Events</span>
+                </a>
+                <a href="/alerts" class="nav-item" data-page="alerts">
+                    <span class="nav-icon">🚨</span>
+                    <span>Alerts</span>
+                </a>
+                <a href="/pcap" class="nav-item" data-page="pcap">
+                    <span class="nav-icon">📁</span>
+                    <span>PCAP Analysis</span>
+                </a>
+                <a href="/settings" class="nav-item" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menu-toggle-nested">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="page-title">DNS Events</h1>
+            </header>
+
+            <div class="content-area">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>All DNS Events</h3>
+                        <div class="table-filters">
+                            <input type="text" id="event-search-nested" placeholder="Search domains..." class="search-input">
+                            <select id="severity-filter-nested" class="filter-select">
+                                <option value="">All Severities</option>
+                                <option value="CRITICAL">Critical</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
+                            </select>
+                            <button id="refresh-btn-nested" class="btn btn-secondary">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="events-table" id="events-table-nested">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Domain</th>
+                                    <th>Type</th>
+                                    <th>Expected IP</th>
+                                    <th>Received IP</th>
+                                    <th>Risk Score</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-body-nested">
+                                <!-- Events populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

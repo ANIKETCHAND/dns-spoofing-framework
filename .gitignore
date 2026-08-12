@@ -1,0 +1,33 @@
+# Python Bytecode & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# SQLite Database Files
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+*.db
+
+# Logs & Temporary Files
+*.log
+scratch/
+.system_generated/
+.DS_Store
+Thumbs.db
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo

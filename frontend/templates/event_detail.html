@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - DNS Spoofing Framework</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="detail-container">
+        <header class="detail-header">
+            <a href="/" class="back-btn">← Back to Dashboard</a>
+            <h1>DNS Event Details</h1>
+            <span class="lab-badge">LAB MODE</span>
+        </header>
+
+        <main class="detail-content" id="detail-content">
+            <!-- Content populated by JavaScript -->
+        </main>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+        // Load event details on page load
+        const eventId = window.location.pathname.split('/').pop();
+        if (eventId && eventId !== 'event_detail.html') {
+            loadEventDetail(eventId);
+        }
+    </script>
+</body>
+</html>

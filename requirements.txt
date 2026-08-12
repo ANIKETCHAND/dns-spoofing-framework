@@ -1,0 +1,10 @@
+# Dependencies for DNS Spoofing Simulation Framework.
+# Unpinned for compatibility with Python 3.14+
+fastapi
+uvicorn
+sqlalchemy
+scapy
+python-multipart
+pydantic
+python-dotenv
+jinja2
