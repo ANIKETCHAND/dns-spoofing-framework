@@ -607,15 +607,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (status.running) {
                 await fetch('/api/monitor/stop', { method: 'POST' });
+                appendTerminalLog('t-yellow', 'MONITOR', 'Live packet capture stopped.');
             } else {
                 const selectedIface = interfaceSelect ? interfaceSelect.value : '';
                 const url = selectedIface ? `/api/monitor/start?interface=${encodeURIComponent(selectedIface)}` : '/api/monitor/start';
-                await fetch(url, { method: 'POST' });
+                const startRes = await fetch(url, { method: 'POST' });
+                const data = await startRes.json();
+
+                if (!startRes.ok || data.error) {
+                    const errMsg = data.detail || data.message || 'Live network sniffing requires root/sudo privileges (e.g. sudo ./run.sh on Kali Linux). In web/cloud mode, use PCAP analysis or Demo mode!';
+                    alert(`⚠️ Sniffing Notice: ${errMsg}`);
+                    appendTerminalLog('t-red', 'MONITOR_ERR', errMsg);
+                } else {
+                    appendTerminalLog('t-green', 'MONITOR', `Started live packet capture on interface '${selectedIface || 'default'}'`);
+                }
             }
 
             await checkMonitorStatus();
         } catch (err) {
             console.error('Error toggling monitor:', err);
+            alert(`⚠️ Sniffing Error: ${err.message}`);
         } finally {
             toggleMonitorBtn.disabled = false;
         }

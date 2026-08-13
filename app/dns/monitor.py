@@ -255,17 +255,18 @@ class DNSMonitor:
 
     def start(self, timeout: Optional[int] = None) -> None:
         """Start monitoring DNS traffic with optimized batching."""
+        self.last_error = None
         if not SCAPY_AVAILABLE:
-            logger.error("Cannot start monitoring - scapy not available")
+            self.last_error = "Scapy not installed. Live monitoring requires Scapy."
+            logger.error(self.last_error)
+            self.is_running = False
             return
 
         logger.warning(f"LAB MODE: Starting DNS monitor on interface '{self.interface or 'default'}'")
         self.is_running = True
 
         try:
-            # Optimize BPF filter for better performance
             bpf_filter = "udp port 53 or tcp port 53"
-
             sniff_args = {
                 "filter": bpf_filter,
                 "prn": self._packet_handler,
@@ -276,14 +277,13 @@ class DNSMonitor:
             if self.interface and self.interface.lower() != "any":
                 sniff_args["iface"] = self.interface
 
-            # Use fast callback mode if available
-            if hasattr(sniff, 'set_filter'):
-                sniff_args["store"] = False
-                sniff_args["prn"] = self._packet_handler
-
             sniff(**sniff_args)
+        except (PermissionError, OSError) as pe:
+            self.last_error = f"Raw socket sniffing requires root/sudo privileges (e.g. sudo ./run.sh on Kali Linux). Details: {str(pe)}"
+            logger.error(self.last_error)
         except Exception as e:
-            logger.error(f"Monitoring error: {e}")
+            self.last_error = f"Monitoring error: {str(e)}"
+            logger.error(self.last_error)
         finally:
             self.is_running = False
 
@@ -369,6 +369,13 @@ def get_global_monitor() -> DNSMonitor:
 
 def start_global_monitor(interface: Optional[str] = None) -> Dict[str, Any]:
     """Start the global DNS monitor."""
+    if not SCAPY_AVAILABLE:
+        return {
+            "running": False,
+            "error": True,
+            "message": "Scapy is not installed. Live network sniffing requires Scapy and root/sudo permissions (e.g. sudo ./run.sh on Kali Linux)."
+        }
+
     monitor = get_global_monitor()
     if monitor.is_running:
         return {"running": True, "message": "Monitor already active", "interface": monitor.interface}
@@ -393,6 +400,7 @@ def get_monitor_status() -> Dict[str, Any]:
         "scapy_available": SCAPY_AVAILABLE,
         "interface": monitor.interface or "default",
         "packet_count": monitor.packet_count,
+        "last_error": getattr(monitor, 'last_error', None),
         "available_interfaces": get_available_interfaces()
     }
 
