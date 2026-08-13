@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function init() {
         initCharts();
         initThreeLogoCanvas();
+        init3DHackerMatrixBackground();
         setupNavigation();
         setupEventListeners();
 
@@ -777,6 +778,102 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.warn('Three.js canvas init skipped:', err);
         }
+    }
+
+    // 3D Hacker Matrix Background Canvas Renderer
+    function init3DHackerMatrixBackground() {
+        const canvas = document.getElementById('hacker-bg-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // Matrix Cyber Glyphs & Hex Tokens
+        const chars = '01ABCDEFGHJKLMNPQRSTUVWXYZ0123456789$#@%&*[]{}<>/\\|:=+~T1557T1568DNS'.split('');
+        const fontSize = 14;
+        const columns = Math.floor(width / fontSize);
+        const drops = [];
+
+        // Initialize drop positions & 3D z-depth opacity
+        for (let i = 0; i < columns; i++) {
+            drops[i] = {
+                y: Math.random() * -100,
+                speed: 1 + Math.random() * 2,
+                opacity: 0.2 + Math.random() * 0.8,
+                color: Math.random() > 0.85 ? '#39d3c3' : (Math.random() > 0.95 ? '#38bdf8' : '#34d399')
+            };
+        }
+
+        function drawMatrix() {
+            // Translucent fade overlay for trailing effect
+            ctx.fillStyle = 'rgba(9, 13, 20, 0.12)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const drop = drops[i];
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                const x = i * fontSize;
+                const y = drop.y * fontSize;
+
+                ctx.fillStyle = drop.color;
+                ctx.globalAlpha = drop.opacity;
+                ctx.fillText(char, x, y);
+
+                // Reset drop when hitting bottom
+                if (y > height && Math.random() > 0.975) {
+                    drop.y = 0;
+                    drop.speed = 1 + Math.random() * 2;
+                }
+                drop.y += drop.speed * 0.5;
+            }
+            ctx.globalAlpha = 1.0;
+            requestAnimationFrame(drawMatrix);
+        }
+
+        drawMatrix();
+
+        // Start periodic terminal CLI log streaming simulation
+        setInterval(streamRandomHackerLog, 3000);
+    }
+
+    function appendTerminalLog(tagClass, tagText, msg) {
+        const stream = document.getElementById('live-terminal-stream');
+        if (!stream) return;
+
+        const timeStr = new Date().toLocaleTimeString();
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        line.innerHTML = `<span class="${tagClass}">[${timeStr} ${tagText}]</span> ${escapeHtml(msg)}`;
+
+        stream.appendChild(line);
+
+        // Keep last 50 lines
+        while (stream.children.length > 50) {
+            stream.removeChild(stream.firstChild);
+        }
+
+        stream.scrollTop = stream.scrollHeight;
+    }
+
+    function streamRandomHackerLog() {
+        const logs = [
+            { class: 't-green', tag: 'PACKET_SNIFFER', msg: 'Captured DNS response query (UDP/53) -> A record validated' },
+            { class: 't-cyan', tag: 'ANOMALY_ENGINE', msg: 'Evaluating Shannon Entropy H(X)... Label entropy within baseline threshold' },
+            { class: 't-yellow', tag: 'CACHE_CHECK', msg: 'Querying in-memory trusted domain cache... Match hit (0.001ms)' },
+            { class: 't-purple', tag: 'MITRE_MATRIX', msg: 'T1557.006 rule verification complete: 0 threat indicators triggered' },
+            { class: 't-green', tag: 'SQLITE_WAL', msg: 'Flushed batch logs to SQLite WAL journal mode [64MB Page Cache OK]' }
+        ];
+
+        const randomLog = logs[Math.floor(Math.random() * logs.length)];
+        appendTerminalLog(randomLog.class, randomLog.tag, randomLog.msg);
     }
 
     // Helper functions
