@@ -1,6 +1,7 @@
 """
 Main FastAPI application for DNS Spoofing Simulation Framework.
 """
+import os
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -55,8 +56,12 @@ app.add_middleware(
 app.include_router(routes.router, prefix="/api")
 
 # Mount static files & templates
-app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
-templates = Jinja2Templates(directory="frontend/templates")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR = os.path.join(BASE_DIR, "frontend", "static")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "frontend", "templates")
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 
 # HTML Page Routes

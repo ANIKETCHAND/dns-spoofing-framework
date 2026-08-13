@@ -2,6 +2,7 @@
 Database configuration and session management for DNS Spoofing Framework.
 """
 import os
+import tempfile
 from contextlib import contextmanager
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, Session
@@ -10,11 +11,21 @@ from sqlalchemy.pool import StaticPool
 from app.database.models import Base
 
 # Default database path
-DEFAULT_DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "dns_framework.db")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DEFAULT_DB_PATH = os.path.join(BASE_DIR, "data", "dns_framework.db")
+
+# Fallback to /tmp for Vercel / serverless read-only filesystems
+data_dir = os.path.dirname(DEFAULT_DB_PATH)
+if os.environ.get("VERCEL") or not os.access(data_dir if os.path.exists(data_dir) else BASE_DIR, os.W_OK):
+    DEFAULT_DB_PATH = os.path.join(tempfile.gettempdir(), "dns_framework.db")
+
 DB_PATH = os.environ.get("DNS_FRAMEWORK_DB", DEFAULT_DB_PATH)
 
 # Ensure data directory exists
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+try:
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+except Exception:
+    pass
 
 # Create engine with SQLite
 # StaticPool is used for SQLite in-memory/thread safety
