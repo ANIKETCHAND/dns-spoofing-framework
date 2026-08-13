@@ -127,6 +127,37 @@ Open your browser and navigate to: **`http://localhost:8000`**
 
 ---
 
+## 🌐 Production Deployment Options
+
+### 🐳 Option 1: Docker & Docker Compose (Recommended)
+
+Run the application inside an isolated Docker container with zero dependency management:
+
+```bash
+# 1. Build and launch with Docker Compose
+docker-compose up -d --build
+
+# 2. View running application logs
+docker-compose logs -f
+```
+
+### ☁️ Option 2: 1-Click Free Cloud Deployment on Render.com
+
+1. Go to **[Render.com](https://render.com/)** and sign in with GitHub.
+2. Click **New +** -> **Web Service**.
+3. Select your repository: `ANIKETCHAND/dns-spoofing-framework`.
+4. Render will automatically detect `render.yaml` and configure:
+   - **Environment**: Python 3.11
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+5. Click **Create Web Service**. Your live URL will be active in ~2 minutes!
+
+### 🚅 Option 3: Railway.app / Hugging Face Spaces
+
+1. Connect your repository `ANIKETCHAND/dns-spoofing-framework` to **[Railway.app](https://railway.app/)**.
+2. Railway will automatically pick up the `Procfile` and deploy your live web service.
+
+---
+
 ## 🧪 Automated Testing
 
 Run the test suite to verify detection rules, API endpoints, and live monitor status:

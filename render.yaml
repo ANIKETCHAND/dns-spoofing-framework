@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: dns-spoofing-framework
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DNS_FRAMEWORK_DB
+        value: /tmp/dns_framework.db

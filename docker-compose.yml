@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  dns-framework:
+    build: .
+    container_name: dns-spoofing-framework
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DNS_FRAMEWORK_DB=/app/data/dns_framework.db
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DEBUG=False
+    volumes:
+      - ./data:/app/data
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    # network_mode: "host" # Uncomment for direct physical interface access on Linux VPS
